@@ -3,8 +3,10 @@ package com.sky.controller.admin;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
@@ -13,13 +15,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.sky.result.Result.success;
 
 /**
  * 员工管理
@@ -63,7 +64,7 @@ public class EmployeeController {
                 .token(token)
                 .build();
 
-        return Result.success(employeeLoginVO);
+        return success(employeeLoginVO);
     }
 
     /**
@@ -73,7 +74,7 @@ public class EmployeeController {
      */
     @PostMapping("/logout")
     public Result<String> logout() {
-        return Result.success();
+        return success();
     }
 
 
@@ -86,7 +87,21 @@ public class EmployeeController {
         // 调用service插入
         employeeService.save(employeeDTO);
 
-        return Result.success();
+        return success();
+    }
+
+
+    @GetMapping("/page")
+    @ApiOperation("分页查询员工")
+    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO) {
+        // 日志记录
+        log.info("查询员工参数：{}", employeePageQueryDTO);
+
+        // 调用service查询
+        PageResult data = employeeService.pageQuery(employeePageQueryDTO);
+
+        // 返回数据
+        return Result.success(data);
     }
 
 }
