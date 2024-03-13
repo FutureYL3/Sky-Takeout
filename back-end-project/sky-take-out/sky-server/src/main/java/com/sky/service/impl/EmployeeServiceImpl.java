@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sky.annotation.AutoFill;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
@@ -13,6 +14,7 @@ import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
+import com.sky.enumeration.OperationType;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
@@ -69,6 +71,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         return employee;
     }
 
+    @AutoFill(value = OperationType.INSERT)
     @Override
     public void save(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
@@ -81,15 +84,15 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         // 设置账号状态，默认为1
         employee.setStatus(StatusConstant.ENABLE);
 
-        // 设置创建时间和更新时间
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
+//        // 设置创建时间和更新时间
+//        employee.setCreateTime(LocalDateTime.now());
+//        employee.setUpdateTime(LocalDateTime.now());
 
         // 设置更新和创建用户操作人的id
-        // TODO （已完成）后期更改为当前操作人的id
-        Long id = BaseContext.getCurrentId();
-        employee.setCreateUser(id);
-        employee.setUpdateUser(id);
+//        // TODO （已完成）后期更改为当前操作人的id
+//        Long id = BaseContext.getCurrentId();
+//        employee.setCreateUser(id);
+//        employee.setUpdateUser(id);
 
         // 将员工插入到数据库中
         save(employee);
@@ -111,25 +114,27 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         return new PageResult(total, records);
     }
 
+    @AutoFill(value = OperationType.UPDATE)
     @Override
-    public void updateStatus(Long id, Integer status) {
+    public void updateStatus(Employee employee) {
+        Long id = employee.getId();
         LambdaUpdateWrapper<Employee> wrapper = new LambdaUpdateWrapper<Employee>()
-                .eq(Employee::getId, id)
-                .set(Employee::getStatus, status);
-        update(wrapper);
+                .eq(Employee::getId, id);
+        update(employee, wrapper);
     }
 
+    @AutoFill(value = OperationType.UPDATE)
     @Override
-    public void updateEmployee(EmployeeDTO employeeDTO) {
+    public void updateEmployee(Employee employee) {
         LambdaUpdateWrapper<Employee> wrapper = new LambdaUpdateWrapper<Employee>()
-                .eq(Employee::getId, employeeDTO.getId())
-                .set(Employee::getUsername, employeeDTO.getUsername())
-                .set(Employee::getName, employeeDTO.getName())
-                .set(Employee::getPhone, employeeDTO.getPhone())
-                .set(Employee::getSex, employeeDTO.getSex())
-                .set(Employee::getIdNumber, employeeDTO.getIdNumber())
-                .set(Employee::getUpdateTime, LocalDateTime.now())
-                .set(Employee::getUpdateUser, BaseContext.getCurrentId());
+                .eq(Employee::getId, employee.getId())
+                .set(Employee::getUsername, employee.getUsername())
+                .set(Employee::getName, employee.getName())
+                .set(Employee::getPhone, employee.getPhone())
+                .set(Employee::getSex, employee.getSex())
+                .set(Employee::getIdNumber, employee.getIdNumber());
+//                .set(Employee::getUpdateTime, LocalDateTime.now())
+//                .set(Employee::getUpdateUser, BaseContext.getCurrentId())
 
         update(wrapper);
 

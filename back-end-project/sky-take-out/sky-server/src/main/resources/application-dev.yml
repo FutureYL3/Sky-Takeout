@@ -6,3 +6,9 @@ sky:
     database: sky_take_out
     username: root
     password: FutureYL030928
+
+  alioss:
+    endpoint: https://oss-cn-hangzhou.aliyuncs.com
+    access-key-id: LTAI5tCo3yMZzBFC5CdCgWPK
+    access-key-secret: Jle8dec8QoZ3wkHxZSj7kADH9ktVMg
+    bucket-name: sky-takeout-yl

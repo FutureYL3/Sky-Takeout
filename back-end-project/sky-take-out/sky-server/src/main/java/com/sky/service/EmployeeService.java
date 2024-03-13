@@ -20,7 +20,7 @@ public interface EmployeeService extends IService<Employee> {
 
     PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
 
-    void updateStatus(Long id, Integer status);
+    void updateStatus(Employee employee);
 
-    void updateEmployee(EmployeeDTO employeeDTO);
+    void updateEmployee(Employee employee);
 }

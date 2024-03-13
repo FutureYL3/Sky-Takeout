@@ -13,6 +13,7 @@ import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
@@ -111,7 +112,8 @@ public class EmployeeController {
         log.info("修改id为{}的员工的状态为{}", id, status);
 
         // 调用service修改状态
-        employeeService.updateStatus(id, status);
+        Employee employee = Employee.builder().id(id).status(status).build();
+        employeeService.updateStatus(employee);
 
         return Result.success();
     }
@@ -132,12 +134,12 @@ public class EmployeeController {
 
     @PutMapping
     @ApiOperation("修改员工信息")
-    public Result updateEmployee(@RequestBody EmployeeDTO employeeDTO) {
+    public Result updateEmployee(@RequestBody Employee employee) {
         // 日志记录
-        log.info("修改id为{}的员工信息为：{}", employeeDTO.getId(), employeeDTO);
+        log.info("修改id为{}的员工信息为：{}", employee.getId(), employee);
 
         // 调用service修改员工信息
-        employeeService.updateEmployee(employeeDTO);
+        employeeService.updateEmployee(employee);
 
         return Result.success();
     }
