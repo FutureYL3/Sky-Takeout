@@ -104,4 +104,42 @@ public class EmployeeController {
         return Result.success(data);
     }
 
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用禁用员工账号")
+    public Result page(@PathVariable Integer status, Long id) {
+        // 日志记录
+        log.info("修改id为{}的员工的状态为{}", id, status);
+
+        // 调用service修改状态
+        employeeService.updateStatus(id, status);
+
+        return Result.success();
+    }
+
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询员工")
+    public Result<Employee> getByid(@PathVariable Long id) {
+        // 日志记录
+        log.info("查询id为{}的员工", id);
+
+        // 调用service查询员工
+        Employee employee = employeeService.getById(id);
+        // 重新设置密码，保证安全性
+        employee.setPassword("******");
+
+        return Result.success(employee);
+    }
+
+    @PutMapping
+    @ApiOperation("修改员工信息")
+    public Result updateEmployee(@RequestBody EmployeeDTO employeeDTO) {
+        // 日志记录
+        log.info("修改id为{}的员工信息为：{}", employeeDTO.getId(), employeeDTO);
+
+        // 调用service修改员工信息
+        employeeService.updateEmployee(employeeDTO);
+
+        return Result.success();
+    }
+
 }

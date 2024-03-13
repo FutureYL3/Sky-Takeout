@@ -1,6 +1,7 @@
 package com.sky.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,6 +26,7 @@ import org.springframework.util.DigestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> implements EmployeeService {
@@ -52,13 +54,13 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         }
 
         //密码比对
-        // TODO 后期需要进行md5加密，然后再进行比对
+        // TODO （已完成）后期需要进行md5加密，然后再进行比对
         if (!password.equals(employee.getPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
 
-        if (employee.getStatus() == StatusConstant.DISABLE) {
+        if (Objects.equals(employee.getStatus(), StatusConstant.DISABLE)) {
             //账号被锁定
             throw new AccountLockedException(MessageConstant.ACCOUNT_LOCKED);
         }
@@ -108,5 +110,30 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
         return new PageResult(total, records);
     }
+
+    @Override
+    public void updateStatus(Long id, Integer status) {
+        LambdaUpdateWrapper<Employee> wrapper = new LambdaUpdateWrapper<Employee>()
+                .eq(Employee::getId, id)
+                .set(Employee::getStatus, status);
+        update(wrapper);
+    }
+
+    @Override
+    public void updateEmployee(EmployeeDTO employeeDTO) {
+        LambdaUpdateWrapper<Employee> wrapper = new LambdaUpdateWrapper<Employee>()
+                .eq(Employee::getId, employeeDTO.getId())
+                .set(Employee::getUsername, employeeDTO.getUsername())
+                .set(Employee::getName, employeeDTO.getName())
+                .set(Employee::getPhone, employeeDTO.getPhone())
+                .set(Employee::getSex, employeeDTO.getSex())
+                .set(Employee::getIdNumber, employeeDTO.getIdNumber())
+                .set(Employee::getUpdateTime, LocalDateTime.now())
+                .set(Employee::getUpdateUser, BaseContext.getCurrentId());
+
+        update(wrapper);
+
+    }
+
 
 }
