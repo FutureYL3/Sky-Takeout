@@ -9,7 +9,6 @@ import com.sky.annotation.AutoFill;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
-import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
@@ -26,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -104,7 +102,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         int pageSize = employeePageQueryDTO.getPageSize();
         String name = employeePageQueryDTO.getName();
 
-        IPage<Employee> employeePage = new Page<Employee>().setPages(page).setSize(pageSize);
+        Page<Employee> employeePage = Page.of(page, pageSize);
         LambdaQueryWrapper<Employee> wrapper = new LambdaQueryWrapper<Employee>().like(name != null, Employee::getName, name);
 
         IPage<Employee> result = employeeMapper.selectPage(employeePage, wrapper);

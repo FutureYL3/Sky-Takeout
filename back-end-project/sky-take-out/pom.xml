@@ -18,7 +18,7 @@
         <module>sky-server</module>
     </modules>
     <properties>
-        <mybatis.spring>2.2.0</mybatis.spring>
+<!--        <mybatis.spring>2.2.0</mybatis.spring>-->
         <lombok>1.18.20</lombok>
         <fastjson>1.2.76</fastjson>
         <commons.lang>2.6</commons.lang>
@@ -30,15 +30,15 @@
         <jjwt>0.9.1</jjwt>
         <jaxb-api>2.3.1</jaxb-api>
         <poi>3.16</poi>
-        <mybatis-plus>3.5.3.1</mybatis-plus>
+        <mybatis-plus>3.4.3</mybatis-plus>
     </properties>
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.mybatis.spring.boot</groupId>
-                <artifactId>mybatis-spring-boot-starter</artifactId>
-                <version>${mybatis.spring}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.mybatis.spring.boot</groupId>-->
+<!--                <artifactId>mybatis-spring-boot-starter</artifactId>-->
+<!--                <version>${mybatis.spring}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>org.projectlombok</groupId>

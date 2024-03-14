@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,8 +28,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class CategoryServiceImpl implements CategoryService {
-
+public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
     @Autowired
     private CategoryMapper categoryMapper;
     @Autowired
@@ -53,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
         category.setCreateUser(BaseContext.getCurrentId());
         category.setUpdateUser(BaseContext.getCurrentId());
 
-        categoryMapper.insert(category);
+        categoryMapper.insertQuery(category);
     }
 
     /**
