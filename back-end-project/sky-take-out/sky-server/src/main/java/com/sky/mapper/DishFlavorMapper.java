@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sky.entity.DishFlavor;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * ClassName: DishFlavorMapper
  * <p>
@@ -18,4 +20,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface DishFlavorMapper extends BaseMapper<DishFlavor> {
+
 }

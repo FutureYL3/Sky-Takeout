@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.SetmealDishMapper">
+    <insert id="addNew" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO setmeal(category_id, name, price, status, description, image, create_time, update_time, create_user, update_user)
+        VALUES (#{categoryId}, #{name}, #{price}, #{status}, #{description}, #{image}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
+    </insert>
+
+    <select id="getCorrespondDishesStatus" resultType="java.lang.Integer">
+        SELECT d.status FROM setmeal_dish s left outer join dish d on s.dish_id = d.id WHERE s.setmeal_id = #{id}
+    </select>
+</mapper>

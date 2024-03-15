@@ -6,7 +6,9 @@ import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
 import com.sky.result.PageResult;
+import com.sky.vo.DishVO;
 
+import java.util.List;
 import java.util.PrimitiveIterator;
 
 /**
@@ -25,4 +27,14 @@ public interface DishService extends IService<Dish> {
     void saveWithFlavor(DishDTO dishDTO);
 
     PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO);
+
+    void batchDelete(List<Long> ids);
+
+    DishVO selectById(Long id);
+
+    void modifyById(DishDTO dishDTO);
+
+    List<Dish> getByCategoryId(Long categoryId);
+
+    void updateStatus(Long id, Integer status);
 }

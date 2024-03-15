@@ -6,4 +6,51 @@
         insert into dish(name, category_id, price, image, description, status, create_time, update_time, create_user, update_user)
             VALUES (#{name}, #{categoryId}, #{price} , #{image} , #{description} , #{status} , #{createTime} , #{updateTime} , #{createUser} , #{createUser} )
     </insert>
+
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
+        SELECT d.*, c.name categoryName FROM dish d left outer join category c on d.category_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                and d.name like CONCAT('%', #{name}, '%')
+            </if>
+            <if test="status != null">
+                and d.status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and d.category_id = #{categoryId}
+            </if>
+        </where>
+        ORDER BY d.create_time DESC
+    </select>
+
+    <update id="modifyById" parameterType="com.sky.entity.Dish">
+        UPDATE dish d
+            <set>
+                <if test="image != null and image != ''">
+                    d.image = #{image},
+                </if>
+                <if test="name != null and name != ''">
+                    d.name = #{name},
+                </if>
+                <if test="price != null">
+                    d.price = #{price},
+                </if>
+                <if test="status != null">
+                    d.status = #{status},
+                </if>
+                <if test="categoryId != null">
+                    d.category_id = #{categoryId},
+                </if>
+                <if test="description != null and description != ''">
+                    d.description = #{description},
+                </if>
+                <if test="updateTime != null">
+                    d.update_time = #{updateTime},
+                </if>
+                <if test="updateUser != null">
+                    d.update_user = #{updateUser}
+                </if>
+            </set>
+        WHERE id = #{id}
+    </update>
 </mapper>

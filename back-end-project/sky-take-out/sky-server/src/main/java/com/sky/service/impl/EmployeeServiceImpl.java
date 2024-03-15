@@ -3,8 +3,9 @@ package com.sky.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.annotation.AutoFill;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
@@ -101,13 +102,14 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         int page = employeePageQueryDTO.getPage();
         int pageSize = employeePageQueryDTO.getPageSize();
         String name = employeePageQueryDTO.getName();
+        PageHelper.startPage(page, pageSize);
+//        Page<Employee> employeePage = Page.of(page, pageSize);
+//        LambdaQueryWrapper<Employee> wrapper = new LambdaQueryWrapper<Employee>().like(name != null, Employee::getName, name);
 
-        Page<Employee> employeePage = Page.of(page, pageSize);
-        LambdaQueryWrapper<Employee> wrapper = new LambdaQueryWrapper<Employee>().like(name != null, Employee::getName, name);
-
-        IPage<Employee> result = employeeMapper.selectPage(employeePage, wrapper);
+//        IPage<Employee> result = employeeMapper.selectPage(employeePage, wrapper);
+        Page<Employee> result = employeeMapper.pageQuery(employeePageQueryDTO);
         long total = result.getTotal();
-        List<Employee> records = result.getRecords();
+        List<Employee> records = result.getResult();
 
         return new PageResult(total, records);
     }

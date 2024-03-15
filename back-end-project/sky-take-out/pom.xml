@@ -30,7 +30,7 @@
         <jjwt>0.9.1</jjwt>
         <jaxb-api>2.3.1</jaxb-api>
         <poi>3.16</poi>
-        <mybatis-plus>3.4.3</mybatis-plus>
+        <mybatis-plus>3.5.3.1</mybatis-plus>
     </properties>
     <dependencyManagement>
         <dependencies>

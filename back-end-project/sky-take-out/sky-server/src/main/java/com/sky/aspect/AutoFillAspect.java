@@ -38,7 +38,7 @@ public class AutoFillAspect {
 
         // 拿到操作类型
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        AutoFill annotation = (AutoFill) signature.getMethod().getAnnotation(AutoFill.class);
+        AutoFill annotation = signature.getMethod().getAnnotation(AutoFill.class);
         OperationType type = annotation.value();
         // 拿到方法参数
         Object entity = joinPoint.getArgs()[0];
