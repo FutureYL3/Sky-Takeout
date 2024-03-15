@@ -5,15 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.sky.annotation.AutoFill;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.*;
-import com.sky.enumeration.OperationType;
 import com.sky.exception.DeletionNotAllowedException;
-import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
@@ -201,6 +198,11 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
                 .in(Setmeal::getId, idList)
                 .set(Setmeal::getStatus, StatusConstant.DISABLE);
         setMealService.update(updateWrapper);
+        // 菜品停售
+        LambdaUpdateWrapper<Dish> dishUpdateWrapper = new LambdaUpdateWrapper<Dish>()
+                .eq(Dish::getId, id)
+                .set(status != null, Dish::getStatus, status);
+        update(dishUpdateWrapper);
     }
 
 
