@@ -1,6 +1,5 @@
 package com.sky.controller.admin;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
@@ -105,4 +104,6 @@ public class DishController {
 
         return Result.success();
     }
+
+    // 清理redis缓存方法
 }
