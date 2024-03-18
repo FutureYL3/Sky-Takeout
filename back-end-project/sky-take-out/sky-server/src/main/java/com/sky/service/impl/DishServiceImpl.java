@@ -177,11 +177,13 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         List<Long> idList = setmealDishes.stream()
                 .map(SetmealDish::getId)
                 .collect(Collectors.toList());
-        // 更新这些套餐为停售
-        LambdaUpdateWrapper<Setmeal> updateWrapper = new LambdaUpdateWrapper<Setmeal>()
-                .in(Setmeal::getId, idList)
-                .set(Setmeal::getStatus, StatusConstant.DISABLE);
-        setMealService.update(updateWrapper);
+        // 如果idList不为空，则更新这些套餐为停售
+        if (!idList.isEmpty()) {
+            LambdaUpdateWrapper<Setmeal> updateWrapper = new LambdaUpdateWrapper<Setmeal>()
+                    .in(Setmeal::getId, idList)
+                    .set(Setmeal::getStatus, StatusConstant.DISABLE);
+            setMealService.update(updateWrapper);
+        }
         // 菜品停售
         LambdaUpdateWrapper<Dish> dishUpdateWrapper = new LambdaUpdateWrapper<Dish>()
                 .eq(Dish::getId, id)

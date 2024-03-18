@@ -1,5 +1,6 @@
 package com.sky.controller.admin;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
@@ -10,9 +11,11 @@ import com.sky.vo.DishVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * ClassName: DishController
@@ -31,7 +34,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DishController {
-
+    private final RedisTemplate redisTemplate;
     private final DishService dishService;
 
     @PostMapping
@@ -41,6 +44,8 @@ public class DishController {
 
         // 调用service完成新增菜品
         dishService.saveWithFlavor(dto);
+        // 清理特定redis缓存
+        cleanUpCache("dish_" + dto.getCategoryId());
 
         return Result.success();
     }
@@ -61,7 +66,8 @@ public class DishController {
         log.info("删除id为{}的菜品", ids);
         // 调用service删除菜品
         dishService.batchDelete(ids);
-
+        // 清除全部redis缓存
+        cleanUpCache("dish_*");
         return Result.success();
     }
 
@@ -81,7 +87,8 @@ public class DishController {
         log.info("更新菜品：{}", dishDTO);
         // 调用service完成修改
         dishService.modifyById(dishDTO);
-
+        // 清除全部redis缓存
+        cleanUpCache("dish_*");
         return Result.success();
     }
 
@@ -101,9 +108,16 @@ public class DishController {
         log.info("更新id为{}的菜品状态为{}", id, status);
         // 调用service完成更新
         dishService.updateStatus(id, status);
-
+        // 清除特定redis缓存
+        LambdaQueryWrapper<Dish> wrapper = new LambdaQueryWrapper<Dish>().eq(Dish::getId, id);
+        Dish dish = dishService.getOne(wrapper);
+        cleanUpCache("dish_" + dish.getCategoryId());
         return Result.success();
     }
 
     // 清理redis缓存方法
+    private void cleanUpCache(String pattern) {
+        Set keys = redisTemplate.keys(pattern);
+        redisTemplate.delete(keys);
+    }
 }

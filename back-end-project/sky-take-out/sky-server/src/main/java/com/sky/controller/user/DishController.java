@@ -49,7 +49,8 @@ public class DishController {
         // 查询
         Dish dish = new Dish();
         dish.setCategoryId(categoryId);
-        dish.setStatus(StatusConstant.ENABLE);//查询起售中的菜品
+        //查询起售中的菜品
+        dish.setStatus(StatusConstant.ENABLE);
 
         data = dishService.listWithFlavor(dish);
         // 添加
