@@ -18,6 +18,7 @@ import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetMealService;
 import com.sky.service.SetmealDishService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -153,5 +154,18 @@ public class SetMealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
                 .eq(Setmeal::getId, id)
                 .set(status != null, Setmeal::getStatus, status);
         update(wrapper);
+    }
+
+    @Override
+    public List<Setmeal> listByCategoryId(Setmeal setmeal) {
+        LambdaQueryWrapper<Setmeal> wrapper = new LambdaQueryWrapper<Setmeal>()
+                .eq(Setmeal::getCategoryId, setmeal.getCategoryId())
+                .eq(Setmeal::getStatus, StatusConstant.ENABLE);
+        return list(wrapper);
+    }
+
+    @Override
+    public List<DishItemVO> getDishItemById(Long id) {
+        return setmealMapper.getDishesById(id);
     }
 }

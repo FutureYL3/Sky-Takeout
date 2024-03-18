@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
-import com.sky.entity.DishFlavor;
 import com.sky.result.PageResult;
 import com.sky.vo.DishVO;
 
 import java.util.List;
-import java.util.PrimitiveIterator;
 
 /**
  * ClassName: DishService
@@ -37,4 +35,11 @@ public interface DishService extends IService<Dish> {
     List<Dish> getByCategoryId(Long categoryId);
 
     void updateStatus(Long id, Integer status);
+
+    /**
+     * 条件查询菜品和口味
+     * @param dish
+     * @return
+     */
+    List<DishVO> listWithFlavor(Dish dish);
 }

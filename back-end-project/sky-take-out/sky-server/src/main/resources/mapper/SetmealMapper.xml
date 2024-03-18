@@ -53,4 +53,8 @@
             </set>
         WHERE s.id = #{id}
     </update>
+
+    <select id="getDishesById" resultType="com.sky.vo.DishItemVO">
+        SELECT sd.name name, sd.copies copies, d.image image, d.description description FROM setmeal_dish sd, dish d WHERE sd.dish_id = d.id AND sd.setmeal_id = #{id}
+    </select>
 </mapper>

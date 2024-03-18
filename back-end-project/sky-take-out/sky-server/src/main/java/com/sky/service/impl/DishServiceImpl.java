@@ -11,6 +11,7 @@ import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.*;
 import com.sky.exception.DeletionNotAllowedException;
+import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
@@ -52,6 +53,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     private final SetmealDishMapper setmealDishMapper;
     private final CategoryService categoryService;
     private final SetMealService setMealService;
+    private final DishFlavorMapper dishFlavorMapper;
 
     @Override
     @Transactional
@@ -80,30 +82,12 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         int pageSize = dishPageQueryDTO.getPageSize();
         // 设置分页对象
         PageHelper.startPage(page, pageSize);
-//        Page<Dish> dishPage = Page.of(page, pageSize);
-        // 设置查询wrapper
-//        LambdaQueryWrapper<Dish> wrapper = new LambdaQueryWrapper<Dish>()
-//                .eq(status != null, Dish::getStatus, status)
-//                .eq(categoryId != null, Dish::getCategoryId, categoryId)
-//                .like(name != null, Dish::getName, name);
         // 查询
         Page<DishVO> pageResult = dishMapper.pageQuery(dishPageQueryDTO);
-//        Page<Dish> pageResult = page(dishPage, wrapper);
         // 拿到查询数据
         long total = pageResult.getTotal();
         List<DishVO> list = pageResult.getResult();
         // 查找分类名称并封装到vo中
-//        ArrayList<DishVO> list = new ArrayList<>();
-//        for (Dish dish : records) {
-//            // 查找分类名称
-//            Long dishCategoryId = dish.getCategoryId();
-//            String categoryName = categoryService.getById(dishCategoryId).getName();
-//            // 结果封装到vo中
-//            DishVO dishVO = new DishVO();
-//            BeanUtils.copyProperties(dish, dishVO);
-//            dishVO.setCategoryName(categoryName);
-//            list.add(dishVO);
-//        }
         // 返回结果
         return PageResult.builder().total(total).records(list).build();
     }
@@ -205,5 +189,33 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         update(dishUpdateWrapper);
     }
 
+    /**
+     * 条件查询菜品和口味
+     * @param dish
+     * @return
+     */
+    public List<DishVO> listWithFlavor(Dish dish) {
+        LambdaQueryWrapper<Dish> wrapper = new LambdaQueryWrapper<Dish>()
+                .eq(Dish::getCategoryId, dish.getCategoryId())
+                .eq(Dish::getStatus, StatusConstant.ENABLE);
+        List<Dish> dishList = dishMapper.selectList(wrapper);
+
+        List<DishVO> dishVOList = new ArrayList<>();
+
+        for (Dish d : dishList) {
+            DishVO dishVO = new DishVO();
+            BeanUtils.copyProperties(d,dishVO);
+
+            //根据菜品id查询对应的口味
+            LambdaQueryWrapper<DishFlavor> dishFlavorWrapper = new LambdaQueryWrapper<DishFlavor>()
+                    .eq(DishFlavor::getDishId, d.getId());
+            List<DishFlavor> flavors = dishFlavorMapper.selectList(dishFlavorWrapper);
+
+            dishVO.setFlavors(flavors);
+            dishVOList.add(dishVO);
+        }
+
+        return dishVOList;
+    }
 
 }
