@@ -18,4 +18,6 @@ import com.sky.entity.ShoppingCart;
  */
 public interface ShoppingCartService extends IService<ShoppingCart> {
     void addToCart(ShoppingCartDTO shoppingCartDTO);
+
+    void subFromCart(ShoppingCartDTO shoppingCartDTO);
 }
