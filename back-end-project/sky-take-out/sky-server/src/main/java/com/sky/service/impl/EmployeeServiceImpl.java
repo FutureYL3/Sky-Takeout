@@ -101,12 +101,8 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
         int page = employeePageQueryDTO.getPage();
         int pageSize = employeePageQueryDTO.getPageSize();
-        String name = employeePageQueryDTO.getName();
         PageHelper.startPage(page, pageSize);
-//        Page<Employee> employeePage = Page.of(page, pageSize);
-//        LambdaQueryWrapper<Employee> wrapper = new LambdaQueryWrapper<Employee>().like(name != null, Employee::getName, name);
 
-//        IPage<Employee> result = employeeMapper.selectPage(employeePage, wrapper);
         Page<Employee> result = employeeMapper.pageQuery(employeePageQueryDTO);
         long total = result.getTotal();
         List<Employee> records = result.getResult();
