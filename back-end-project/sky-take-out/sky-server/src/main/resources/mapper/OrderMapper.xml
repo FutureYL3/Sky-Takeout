@@ -52,4 +52,23 @@
                 status = 6
         WHERE id = #{id}
     </update>
+
+    <select id="conditionSearch" resultType="com.sky.vo.OrderVO">
+        SELECT * FROM orders
+        <where>
+            <if test="number != null and number != ''">
+                and number like CONCAT('%', #{number}, '%')
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone like CONCAT('%', #{phone}, '%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="beginTime != null and endTime != null">
+                and order_time between #{beginTime} and #{endTime}
+            </if>
+        </where>
+        ORDER BY order_time DESC
+    </select>
 </mapper>

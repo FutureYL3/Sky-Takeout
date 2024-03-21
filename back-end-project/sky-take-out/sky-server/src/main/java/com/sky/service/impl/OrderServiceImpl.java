@@ -2,8 +2,6 @@ package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -23,6 +21,7 @@ import com.sky.service.ShoppingCartService;
 import com.sky.service.UserService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +29,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -191,15 +192,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     @Override
     public OrderVO selectById(Long orderId) {
         // 拿到订单基本信息
-        Orders orders = getById(orderId);
-        // 拿到订单详情
-        LambdaQueryWrapper<OrderDetail> wrapper = new LambdaQueryWrapper<OrderDetail>().eq(OrderDetail::getOrderId, orderId);
-        List<OrderDetail> details = orderDetailService.list(wrapper);
-        // 封装返回结果
-        OrderVO orderVO = new OrderVO();
-        BeanUtils.copyProperties(orders, orderVO);
-        orderVO.setOrderDetailList(details);
-        return orderVO;
+        return getOrderVO(orderId);
     }
 
     @Override
@@ -241,4 +234,59 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
             orderMapper.cancelOrder(id);
         }
     }
+
+    @Override
+    public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        int page = ordersPageQueryDTO.getPage();
+        int pageSize = ordersPageQueryDTO.getPageSize();
+        PageHelper.startPage(page, pageSize);
+        // 查询
+        Page<OrderVO> result = orderMapper.conditionSearch(ordersPageQueryDTO);
+        long total = result.getTotal();
+        List<OrderVO> records = result.getResult();
+
+        return new PageResult(total, records);
+
+    }
+
+    @Override
+    public OrderStatisticsVO orderStatistics() {
+        OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
+        Integer[] statusArray = {Orders.TO_BE_CONFIRMED, Orders.CONFIRMED, Orders.DELIVERY_IN_PROGRESS};
+        for (Integer status : statusArray) {
+            LambdaQueryWrapper<Orders> wrapper = new LambdaQueryWrapper<Orders>()
+                    .eq(Orders::getStatus, status);
+            Integer count = Math.toIntExact(count(wrapper));
+            switch (status) {
+                case 2:
+                    orderStatisticsVO.setToBeConfirmed(count);
+                    break;
+                case 3:
+                    orderStatisticsVO.setConfirmed(count);
+                    break;
+                case 4:
+                    orderStatisticsVO.setDeliveryInProgress(count);
+                    break;
+            }
+        }
+
+        return orderStatisticsVO;
+    }
+
+    @Override
+    public OrderVO orderDetail(Long id) {
+        return getOrderVO(id);
+    }
+
+    private OrderVO getOrderVO(Long id) {
+        Orders orders = getById(id);
+        LambdaQueryWrapper<OrderDetail> wrapper = new LambdaQueryWrapper<OrderDetail>().eq(OrderDetail::getOrderId, id);
+        List<OrderDetail> details = orderDetailService.list(wrapper);
+        OrderVO orderVO = new OrderVO();
+        BeanUtils.copyProperties(orders, orderVO);
+        orderVO.setOrderDetailList(details);
+        return orderVO;
+    }
+
+
 }

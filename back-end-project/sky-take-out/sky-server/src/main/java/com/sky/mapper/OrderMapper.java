@@ -39,4 +39,6 @@ public interface OrderMapper extends BaseMapper<Orders> {
     Page<OrderVO> historyOrdersWithoutDetail(OrdersPageQueryDTO ordersPageQueryDTO);
 
     void cancelOrder(Long id);
+
+    Page<OrderVO> conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
 }
