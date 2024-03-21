@@ -7,14 +7,13 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.OrderBusinessException;
-import com.sky.mapper.*;
+import com.sky.mapper.AddressBookMapper;
+import com.sky.mapper.OrderMapper;
+import com.sky.mapper.UserMapper;
 import com.sky.result.PageResult;
-import com.sky.result.Result;
 import com.sky.service.OrderDetailService;
 import com.sky.service.OrderService;
 import com.sky.service.ShoppingCartService;
@@ -29,8 +28,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -276,6 +273,53 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     @Override
     public OrderVO orderDetail(Long id) {
         return getOrderVO(id);
+    }
+
+    @Override
+    public void confirmOrder(Long id) {
+        // 拿到订单信息
+        Orders orders = getById(id);
+        // 如果订单状态为待接单，则更改订单状态为已接单（3）
+        if (Objects.equals(orders.getStatus(), Orders.TO_BE_CONFIRMED)) {
+            orderMapper.confirmOrder(id);
+        }
+    }
+
+    @Override
+    public void rejectOrder(OrdersRejectionDTO ordersRejectionDTO) {
+        // 订单只有在待处理状态才能拒单
+        Orders orders = getById(ordersRejectionDTO.getId());
+        if (Objects.equals(orders.getStatus(), Orders.TO_BE_CONFIRMED)) {
+            orderMapper.rejectOrder(ordersRejectionDTO);
+        }
+    }
+
+    @Override
+    public void cancelOrderAdmin(OrdersCancelDTO ordersCancelDTO) {
+        Orders orders = getById(ordersCancelDTO.getId());
+        // 待付款、待派送、派送中、已完成状态可以进行取消操作
+        if (!Objects.equals(orders.getStatus(), Orders.TO_BE_CONFIRMED)
+                || !orders.getStatus().equals(Orders.CANCELLED)) {
+            orderMapper.cancelOrderAdmin(ordersCancelDTO);
+        }
+    }
+
+    @Override
+    public void deliveryOrder(Long id) {
+        // 只有待派送的订单才能进行派送操作
+        Orders orders = getById(id);
+        if (Objects.equals(orders.getStatus(), Orders.CONFIRMED)) {
+            orderMapper.deliveryOrder(id);
+        }
+    }
+
+    @Override
+    public void completeOrder(Long id) {
+        // 只有派送中的订单才能进行完成操作
+        Orders orders = getById(id);
+        if (Objects.equals(orders.getStatus(), Orders.DELIVERY_IN_PROGRESS)) {
+            orderMapper.completeOrder(id);
+        }
     }
 
     private OrderVO getOrderVO(Long id) {

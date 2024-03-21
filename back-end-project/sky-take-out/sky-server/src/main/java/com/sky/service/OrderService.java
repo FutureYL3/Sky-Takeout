@@ -1,9 +1,7 @@
 package com.sky.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.Orders;
 import com.sky.result.PageResult;
 import com.sky.vo.OrderPaymentVO;
@@ -52,4 +50,14 @@ public interface OrderService extends IService<Orders> {
     OrderStatisticsVO orderStatistics();
 
     OrderVO orderDetail(Long id);
+
+    void confirmOrder(Long id);
+
+    void rejectOrder(OrdersRejectionDTO ordersRejectionDTO);
+
+    void cancelOrderAdmin(OrdersCancelDTO ordersCancelDTO);
+
+    void deliveryOrder(Long id);
+
+    void completeOrder(Long id);
 }
