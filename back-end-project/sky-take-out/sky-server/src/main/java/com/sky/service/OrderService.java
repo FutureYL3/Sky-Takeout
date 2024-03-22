@@ -9,6 +9,8 @@ import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 
+import java.util.List;
+
 /**
  * ClassName: OrderService
  * <p>
@@ -60,4 +62,10 @@ public interface OrderService extends IService<Orders> {
     void deliveryOrder(Long id);
 
     void completeOrder(Long id);
+
+    void cancelTimeoutOrder(List<Long> ids);
+
+    void completeDeliveryInProgressOrder(List<Long> ids);
+
+    void remindOrder(Long id);
 }

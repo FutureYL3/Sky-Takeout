@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,6 +14,7 @@ import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
+import com.sky.properties.ShopProperties;
 import com.sky.result.PageResult;
 import com.sky.service.OrderDetailService;
 import com.sky.service.OrderService;
@@ -23,6 +25,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,6 +61,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     private final WeChatPayUtil weChatPayUtil;
     private final UserMapper userMapper;
     private final OrderMapper orderMapper;
+    private final ShopProperties shopProperties;
+    private final WebSocketServer webSocketServer;
     @Override
     @Transactional
     public OrderSubmitVO submit(OrdersSubmitDTO ordersSubmitDTO) {
@@ -75,6 +81,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         if (shoppingCarts == null || shoppingCarts.isEmpty()) {
             throw new OrderBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
         }
+        // 判断用户收获地址是否在五公里内
+        // 拿到用户的收货地址的经纬度
+
+        // 拿到商家位置的经纬度
+
+        // 计算用户和商家之间的直线距离
+
+        // 判断，若超过五公里，则抛异常
+
         // 向订单表插入一条数据
         Orders orders = new Orders();
         BeanUtils.copyProperties(ordersSubmitDTO, orders);
@@ -155,6 +170,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
                 .build();
 
         orderMapper.update(orders);
+        // 来单提醒
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("type", 1);
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "订单号：" + outTradeNo);
+        String jsonString = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(jsonString);
     }
 
     @Override
@@ -228,7 +250,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
 //                    .eq(Orders::getId, id)
 //                    .set(Orders::getStatus, Orders.CANCELLED);
 //            update(updateWrapper);
-            orderMapper.cancelOrder(id);
+            orderMapper.cancelOrder(id, LocalDateTime.now());
         }
     }
 
@@ -290,7 +312,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         // 订单只有在待处理状态才能拒单
         Orders orders = getById(ordersRejectionDTO.getId());
         if (Objects.equals(orders.getStatus(), Orders.TO_BE_CONFIRMED)) {
-            orderMapper.rejectOrder(ordersRejectionDTO);
+            orderMapper.rejectOrder(ordersRejectionDTO, LocalDateTime.now());
         }
     }
 
@@ -300,7 +322,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         // 待付款、待派送、派送中、已完成状态可以进行取消操作
         if (!Objects.equals(orders.getStatus(), Orders.TO_BE_CONFIRMED)
                 || !orders.getStatus().equals(Orders.CANCELLED)) {
-            orderMapper.cancelOrderAdmin(ordersCancelDTO);
+            orderMapper.cancelOrderAdmin(ordersCancelDTO, LocalDateTime.now());
         }
     }
 
@@ -318,8 +340,34 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         // 只有派送中的订单才能进行完成操作
         Orders orders = getById(id);
         if (Objects.equals(orders.getStatus(), Orders.DELIVERY_IN_PROGRESS)) {
-            orderMapper.completeOrder(id);
+            orderMapper.completeOrder(id, LocalDateTime.now());
         }
+    }
+
+    @Override
+    public void cancelTimeoutOrder(List<Long> ids) {
+        orderMapper.cancelTimeoutOrder(ids, LocalDateTime.now());
+    }
+
+    @Override
+    public void completeDeliveryInProgressOrder(List<Long> ids) {
+        orderMapper.completeDeliveryInProgressOrder(ids);
+    }
+
+    @Override
+    public void remindOrder(Long id) {
+        Orders orders = getById(id);
+        if (orders == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("type", 2);
+        map.put("orderId", id);
+        map.put("content", "订单号：" + orders.getNumber());
+        String jsonString = JSON.toJSONString(map);
+
+        webSocketServer.sendToAllClient(jsonString);
     }
 
     private OrderVO getOrderVO(Long id) {

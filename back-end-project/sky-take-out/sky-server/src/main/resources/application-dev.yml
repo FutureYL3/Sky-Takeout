@@ -29,3 +29,6 @@ sky:
     weChatPayCertFilePath: test
     notifyUrl: test
     refundNotifyUrl: test
+
+  shop:
+    address: xxx

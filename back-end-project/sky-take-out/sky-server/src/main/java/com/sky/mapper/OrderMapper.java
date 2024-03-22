@@ -11,6 +11,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * ClassName: OrderMapper
  * <p>
@@ -41,22 +44,26 @@ public interface OrderMapper extends BaseMapper<Orders> {
 
     Page<OrderVO> historyOrdersWithoutDetail(OrdersPageQueryDTO ordersPageQueryDTO);
 
-    void cancelOrder(Long id);
+    void cancelOrder(Long id, LocalDateTime time);
 
     Page<OrderVO> conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
 
     @Update("UPDATE orders SET status = 3 WHERE id = #{id}")
     void confirmOrder(Long id);
 
-    @Update("UPDATE orders SET status = 6, rejection_reason = #{rejectionReason} WHERE id = #{id}")
-    void rejectOrder(OrdersRejectionDTO ordersRejectionDTO);
+    @Update("UPDATE orders SET status = 6, rejection_reason = #{rejectionReason}, cancel_time = #{time} WHERE id = #{id}")
+    void rejectOrder(OrdersRejectionDTO ordersRejectionDTO, LocalDateTime time);
 
-    @Update("UPDATE orders SET status = 6, cancel_reason = #{cancelReason} WHERE id = #{id}")
-    void cancelOrderAdmin(OrdersCancelDTO ordersCancelDTO);
+    @Update("UPDATE orders SET status = 6, cancel_reason = #{cancelReason}, cancel_time = #{time} WHERE id = #{id}")
+    void cancelOrderAdmin(OrdersCancelDTO ordersCancelDTO, LocalDateTime time);
 
     @Update("UPDATE orders SET status = 4 WHERE id = #{id} ")
     void deliveryOrder(Long id);
 
-    @Update("UPDATE orders SET status = 5 WHERE id = #{id} ")
-    void completeOrder(Long id);
+    @Update("UPDATE orders SET status = 5, delivery_time = #{time} WHERE id = #{id} ")
+    void completeOrder(Long id, LocalDateTime time);
+
+    void cancelTimeoutOrder(List<Long> ids, LocalDateTime time);
+
+    void completeDeliveryInProgressOrder(List<Long> ids);
 }

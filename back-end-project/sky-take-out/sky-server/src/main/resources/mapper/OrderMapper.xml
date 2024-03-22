@@ -49,7 +49,8 @@
     <update id="cancelOrder" >
         UPDATE orders
             SET
-                status = 6
+                status = 6,
+                cancel_time = #{time}
         WHERE id = #{id}
     </update>
 
@@ -71,4 +72,26 @@
         </where>
         ORDER BY order_time DESC
     </select>
+
+    <update id="cancelTimeoutOrder" >
+        UPDATE orders
+            SET
+                status = 6,
+                cancel_reason = '订单超时取消',
+                cancel_time = #{time}
+        WHERE id IN
+            <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+    </update>
+
+    <update id="completeDeliveryInProgressOrder">
+        UPDATE orders
+        SET
+        status = 5
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </update>
 </mapper>
