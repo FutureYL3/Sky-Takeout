@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.ReportMapper">
+
+    <select id="getTurnover" resultType="java.lang.Double">
+        SELECT SUM(amount) FROM orders WHERE delivery_time BETWEEN #{begin} AND #{end} AND status = 5
+    </select>
+
+    <select id="newUserNum" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM user WHERE create_time BETWEEN #{begin} AND #{end}
+    </select>
+
+    <select id="totalUserNum" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM user WHERE create_time &lt; #{time}
+    </select>
+
+    <select id="totalOrderNum" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM orders WHERE order_time BETWEEN #{begin} AND #{end}
+    </select>
+
+    <select id="validOrderNum" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM orders WHERE order_time BETWEEN #{begin} AND #{end} AND status = 5
+    </select>
+
+    <select id="salesTop10" resultType="com.sky.dto.GoodsSalesDTO">
+        SELECT od.name name, sum(od.number) number FROM orders o left outer join order_detail od on o.id = od.order_id WHERE o.status = 5 AND o.delivery_time BETWEEN #{begin} AND #{end}
+        GROUP BY od.name
+        ORDER BY number DESC
+        LIMIT 0, 10
+    </select>
+</mapper>

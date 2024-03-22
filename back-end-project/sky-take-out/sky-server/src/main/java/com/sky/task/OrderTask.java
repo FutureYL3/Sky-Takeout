@@ -2,7 +2,6 @@ package com.sky.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sky.entity.Orders;
-import com.sky.mapper.OrderMapper;
 import com.sky.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +46,10 @@ public class OrderTask {
                 .eq(Orders::getStatus, Orders.PENDING_PAYMENT);
         List<Long> ids = orderService.list(wrapper).stream().map(Orders::getId).collect(Collectors.toList());
         // 更新这些订单的状态为已取消
-        orderService.cancelTimeoutOrder(ids);
+        if (!ids.isEmpty()) {
+            orderService.cancelTimeoutOrder(ids);
+        }
+
     }
 
     /**
@@ -64,6 +66,9 @@ public class OrderTask {
                 .ge(Orders::getOrderTime, LocalDateTime.now().minusDays(1));
         List<Long> ids = orderService.list(wrapper).stream().map(Orders::getId).collect(Collectors.toList());
         // 更新这些订单的状态为已完成
-        orderService.completeDeliveryInProgressOrder(ids);
+        if (!ids.isEmpty()) {
+            orderService.completeDeliveryInProgressOrder(ids);
+        }
+
     }
 }

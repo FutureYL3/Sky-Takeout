@@ -1,6 +1,6 @@
 package com.sky.websocket;
 
-import jdk.jpackage.internal.Log;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import javax.websocket.OnClose;
@@ -18,7 +18,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-@ServerEndpoint("/ws/{sid}")
+@ServerEndpoint(value = "/ws/{sid}")
 public class WebSocketServer {
 
     //存放会话对象

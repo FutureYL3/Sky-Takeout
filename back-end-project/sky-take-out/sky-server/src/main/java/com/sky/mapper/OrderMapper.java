@@ -51,10 +51,10 @@ public interface OrderMapper extends BaseMapper<Orders> {
     @Update("UPDATE orders SET status = 3 WHERE id = #{id}")
     void confirmOrder(Long id);
 
-    @Update("UPDATE orders SET status = 6, rejection_reason = #{rejectionReason}, cancel_time = #{time} WHERE id = #{id}")
+    @Update("UPDATE orders SET status = 6, rejection_reason = #{ordersRejectionDTO.rejectionReason}, cancel_time = #{time} WHERE id = #{ordersRejectionDTO.id}")
     void rejectOrder(OrdersRejectionDTO ordersRejectionDTO, LocalDateTime time);
 
-    @Update("UPDATE orders SET status = 6, cancel_reason = #{cancelReason}, cancel_time = #{time} WHERE id = #{id}")
+    @Update("UPDATE orders SET status = 6, cancel_reason = #{ordersCancelDTO.cancelReason}, cancel_time = #{time} WHERE id = #{ordersCancelDTO.id}")
     void cancelOrderAdmin(OrdersCancelDTO ordersCancelDTO, LocalDateTime time);
 
     @Update("UPDATE orders SET status = 4 WHERE id = #{id} ")
