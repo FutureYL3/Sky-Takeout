@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ClassName: OrderMapper
@@ -66,4 +67,6 @@ public interface OrderMapper extends BaseMapper<Orders> {
     void cancelTimeoutOrder(List<Long> ids, LocalDateTime time);
 
     void completeDeliveryInProgressOrder(List<Long> ids);
+
+    Integer countByMap(Map map);
 }

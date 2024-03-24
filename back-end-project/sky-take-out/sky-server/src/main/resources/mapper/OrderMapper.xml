@@ -94,4 +94,16 @@
             #{id}
         </foreach>
     </update>
+
+    <select id="countByMap" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM orders
+        <where>
+            <if test="begin != null">
+                and order_time &gt; #{begin}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
 </mapper>

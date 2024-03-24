@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 
 @RestController
@@ -76,4 +77,12 @@ public class ReportController {
         return Result.success(data);
     }
 
+    @GetMapping("/export")
+    public void export(HttpServletResponse response) {
+        // 日志记录
+        log.info("将近30天的运营数据导出为Excel报表");
+        // 调用service完成报表导出
+        reportService.export(response);
+
+    }
 }

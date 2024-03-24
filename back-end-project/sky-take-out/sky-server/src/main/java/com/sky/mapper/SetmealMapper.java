@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface SetmealMapper extends BaseMapper<Setmeal> {
@@ -32,4 +33,6 @@ public interface SetmealMapper extends BaseMapper<Setmeal> {
     void modify(Setmeal setmeal);
 
     List<DishItemVO> getDishesById(Long id);
+
+    Integer countByMap(Map map);
 }

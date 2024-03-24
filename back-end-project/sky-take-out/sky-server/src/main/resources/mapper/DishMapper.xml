@@ -53,4 +53,16 @@
             </set>
         WHERE id = #{id}
     </update>
+
+    <select id="countByMap" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM dish
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        </where>
+    </select>
 </mapper>
