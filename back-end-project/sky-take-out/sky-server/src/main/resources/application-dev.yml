@@ -15,13 +15,13 @@ sky:
 
   alioss:
     endpoint: https://oss-cn-hangzhou.aliyuncs.com
-    access-key-id: LTAI5tCo3yMZzBFC5CdCgWPK
-    access-key-secret: Jle8dec8QoZ3wkHxZSj7kADH9ktVMg
+    access-key-id: xxx
+    access-key-secret: xxx
     bucket-name: sky-takeout-yl
 
   wechat:
-    appid: wxed80237664c4f669
-    secret: 4def09af9dcac742336b8f9e4b01d4cc
+    appid: xxx
+    secret: xxx
     mchid: test
     mchSerialNo: test
     privateKeyFilePath: test
